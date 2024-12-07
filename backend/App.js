@@ -3,6 +3,7 @@ var cors = require("cors");
 const path = require("path");
 var bodyParser = require("body-parser");
 const multer = require('multer')
+const { MongoClient } = require("mongodb");
 
 // MySQL
 const mysql = require("mysql2");
@@ -52,7 +53,57 @@ app.listen(port, () => {
     console.log("App listening at http://%s:%s", host, port);
 });
 
-app.get("/comments", (req, res) => {
+app.get("/users", async (req, res) => {
+    try {
+        db.query("SELECT * FROM thr33_user", (err, result) => {
+            if (err) {
+                console.error({ error: "Error retrieving all users:" + err });
+                return res.status(500).send({ error: "Error retrieving all users" + err });
+            }
+            res.status(200).send(result);
+        });
+    } catch (err) {
+        console.error({ error: "An unexpected error occurred" + err });
+        res.status(500).send({ error: "An unexpected error occurred" + err });
+    }
+});
+
+app.post("/newUser", (req, res) => {
+    try {
+        // Read data from Body
+        const { username, password } = req.body;
+
+        // Check if the user exists
+        const query = "SELECT * FROM thr33_user WHERE username = ?";
+        db.query(query, [username], (err, results) => {
+            if (err) {
+                console.error("Error checking if user exists in database:", err);
+                return res.status(500).send({ error: "Database error" });
+            }
+
+            if (results.length > 0) {
+                // User already exists
+                return res.status(409).send({ error: "User already exists" });
+            }
+
+            // If user doesn't exist, create a new one
+            const insertQuery = "INSERT INTO thr33_user (username, password, role) VALUES (?, ?, ?)";
+            db.query(insertQuery, [username, password, "user"], (err, results) => {
+                if (err) {
+                    console.error("Error creating new user:", err);
+                    return res.status(500).send({ error: "Error creating user" });
+                }
+
+                res.status(201).send({ message: "User created successfully" });
+            });
+        });
+    } catch (error) {
+        console.error("Error in /newUser route:", error);
+        res.status(500).send({ error: "Internal server error" });
+    }
+});
+
+app.get("/comments", async (req, res) => {
     try {
         db.query("SELECT * FROM thr33_user_comments", (err, result) => {
             if (err) {
@@ -67,23 +118,24 @@ app.get("/comments", (req, res) => {
     }
 });
 
-app.post("/comments/post", (req, res) => {
+app.post("/comments/post", async (req, res) => {
     try {
         // Read data from Body
-        const { userId, message } = req.body;
+        const { commentMessage, userId } = req.body;
+
         // Query MySQL
-        const query = "INSERT INTO thr33_user_comments (commentId, commentMessage, commentTimestamp) VALUES (?, ?, NOW())";
-        db.query(query, [contactId, message], (err, results) => {
+        const query = "INSERT INTO thr33_user_comments (commentMessage, commentTimestamp, userId) VALUES (?, NOW(), ?)";
+        db.query(query, [commentMessage, userId], (err, results) => {
             if (err) {
-                // In case of an error occurs
+                // Handle error
                 console.log("Error in /comments/post " + err);
                 res.status(409).send({ error: "Error adding comment " + err });
             } else {
-                // If it was successful
+                // Success
                 res.status(201).send("Message added successfully");
             }
         });
-    } catch (err) {
+            } catch (err) {
         console.err("Error in /comments/post " + err);
         res.status(500).send({ error: 'Error sending comment' + err });
     };
