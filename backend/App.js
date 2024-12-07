@@ -53,7 +53,7 @@ app.listen(process.env.PORT || port, () => {
     console.log("App listening at http://%s:%s", host, port);
 });
 
-app.get("/users", async (req, res) => {
+app.get("/users/list", async (req, res) => {
     try {
         db.query("SELECT * FROM thr33_user", (err, result) => {
             if (err) {
@@ -68,7 +68,41 @@ app.get("/users", async (req, res) => {
     }
 });
 
-app.post("/newUser", (req, res) => {
+app.get("/users/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        db.query("SELECT * FROM thr33_user WHERE id = ?;", [id], (err, result) => {
+            if (err) {
+                console.error({ error: `Error retrieving user ${id} ` + err });
+                return res.status(500).send({ error: `Error retrieving user ${id} ` + err });
+            }
+            res.status(200).send(result);
+        });
+    } catch (err) {
+        console.error({ error: "An unexpected error occurred" + err });
+        res.status(500).send({ error: "An unexpected error occurred" + err });
+    }
+});
+
+app.delete("/users/delete/:id", async (req, res) => {
+    try {
+        // first get the id if it's there
+        const id = req.params.id;
+        db.query("SELECT * FROM thr33_user WHERE id = ?;", [id], (err, result) => {
+            if (err) {
+                console.error({ error: `Error retrieving user ${id} ` + err });
+                return res.status(500).send({ error: `Error retrieving user ${id} ` + err });
+            }
+            res.status(200).send("User successfully deleted");
+            db.query("delete from thr33_user where id = ?;", [id]);
+        });
+    } catch (err) {
+        console.error({ error: "An unexpected error occurred" + err });
+        res.status(500).send({ error: "An unexpected error occurred" + err });
+    }
+});
+
+app.post("/users/create", (req, res) => {
     try {
         // Read data from Body
         const { username, password } = req.body;
@@ -103,7 +137,7 @@ app.post("/newUser", (req, res) => {
     }
 });
 
-app.get("/comments", async (req, res) => {
+app.get("/comments/list", async (req, res) => {
     try {
         db.query("SELECT * FROM thr33_user_comments", (err, result) => {
             if (err) {
@@ -111,6 +145,39 @@ app.get("/comments", async (req, res) => {
                 return res.status(500).send({ error: "Error retrieving all comments" + err });
             }
             res.status(200).send(result);
+        });
+    } catch (err) {
+        console.error({ error: "An unexpected error occurred" + err });
+        res.status(500).send({ error: "An unexpected error occurred" + err });
+    }
+});
+
+app.get("/comments/:commentId", async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        db.query("SELECT * FROM thr33_user_comments where id = ?;", [commentId], (err, result) => {
+            if (err) {
+                console.error({ error: `Error retrieving comment ${commentId}:` + err });
+                return res.status(500).send({ error: `Error retrieving comments ${commentId}` + err });
+            }
+            res.status(200).send(result);
+        });
+    } catch (err) {
+        console.error({ error: "An unexpected error occurred" + err });
+        res.status(500).send({ error: "An unexpected error occurred" + err });
+    }
+});
+
+app.delete("/comments/delete/:commentId", async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        db.query("SELECT * FROM thr33_user_comments where commentId = ?;", [commentId], (err, result) => {
+            if (err) {
+                console.error({ error: `Error retrieving comment ${commentId}:` + err });
+                return res.status(500).send({ error: `Error retrieving comments ${commentId}` + err });
+            }
+            res.status(200).send("Comment successfully deleted");
+            db.query("delete from thr33_user_comments where commentId = ?;", [commentId]);
         });
     } catch (err) {
         console.error({ error: "An unexpected error occurred" + err });
