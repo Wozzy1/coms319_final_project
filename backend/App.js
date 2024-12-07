@@ -49,7 +49,7 @@ const dbName = "secoms3190";
 const client = new MongoClient(url);
 const db2 = client.db(dbName);
 
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
     console.log("App listening at http://%s:%s", host, port);
 });
 
