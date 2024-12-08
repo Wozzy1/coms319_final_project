@@ -1,21 +1,27 @@
-function TrainingPlans() {
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+function TrainingPlans({ viewer, setViewer }) {
   return (
     <div className='App'>
-      <header className='App-header'>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className='App-link'
-          href='https://reactjs.org'
-          target='_blank'
-          rel='noopener noreferrer'
+      <header className='App-header'>Training plans</header>
+      <body>
+        <button
+          type='button'
+          class='btn btn-primary'
+          onClick={() => {
+            setViewer(0);
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          view
+        </button>
+      </body>
     </div>
   );
+}
+
+function viewLanding() {
+  setViewer(0);
 }
 
 export default TrainingPlans;

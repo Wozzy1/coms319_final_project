@@ -1,19 +1,21 @@
-function Landing() {
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+function Landing({ viewer, setViewer }) {
   return (
     <div className='App'>
-      <header className='App-header'>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className='App-link'
-          href='https://reactjs.org'
-          target='_blank'
-          rel='noopener noreferrer'
+      <header className='App-header'>Landing Page</header>
+      <body>
+        <button
+          type='button'
+          class='btn btn-primary'
+          onClick={() => {
+            setViewer(1);
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          view
+        </button>
+      </body>
     </div>
   );
 }

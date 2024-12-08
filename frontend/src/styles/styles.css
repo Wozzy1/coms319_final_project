@@ -14,17 +14,29 @@
   font-weight: bold;
 }
 
-.navbar {
+.mynavbar {
   font-family: "EB Garamond", serif;
   background-color: gray;
+  color: white;
+  padding: 10px 0;
 }
 
 .navbar-brand {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  transition: font-size 0.3s ease, color 0.3s ease; /* Smooth animation */
+}
+
+.nav-item {
+  font-size: 1rem;
   transition: font-size 0.3s ease, color 0.3s ease; /* Smooth animation */
 }
 
 .navbar-brand:hover {
-  font-size: 1.5rem; /* Enlarged font size on hover */
-  color: #007bff; /* Optional: Change color on hover */
+  font-size: 1.7rem; /* Enlarged font size on hover */
+  /* color: #007bff; */
+}
+
+.nav-item:hover {
+  font-size: 1.2rem; /* Enlarged font size on hover */
+  /* color: #007bff; */
 }
