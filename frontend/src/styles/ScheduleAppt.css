@@ -1,0 +1,39 @@
+.week-grid {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.row {
+  display: table-row;
+}
+
+.cell {
+  display: table-cell;
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.slot {
+  width: 30px;
+}
+
+.slot:hover {
+  background-color: #c7f797;
+}
+
+.time-header {
+  font-weight: bold;
+  background-color: #f7f7f7;
+  width: 150px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.header {
+  background-color: #ececec;
+  font-weight: bold;
+}
