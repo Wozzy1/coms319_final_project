@@ -36,6 +36,20 @@ function Navbar({ viewer, setViewer }) {
                     </a>
                   </Link>
                 </li>
+                <li className='nav-item'>
+                  <Link to='/appointments' style={{ textDecoration: "none" }}>
+                    <a className='nav-link' href='#'>
+                      Appointments
+                    </a>
+                  </Link>
+                </li>
+                <li className='nav-item'>
+                  <Link to='/feedback' style={{ textDecoration: "none" }}>
+                    <a className='nav-link' href='#'>
+                      Customer Feedback
+                    </a>
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

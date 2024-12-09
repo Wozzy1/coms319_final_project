@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Navbar from "./Navbar";
 import TrainingPlans from "./TrainingPlans";
 import Landing from "./Landing";
+import CustomerFeedback from "./CustomerFeedback";
+import ScheduleAppt from "./ScheduleAppt";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -18,21 +20,8 @@ function App() {
         <Routes>
           <Route path='/' element={<Landing />} />
           <Route path='/training_plans' element={<TrainingPlans />} />
-
-          {/* <Route
-            path='/view'
-            element={
-              <div className='container-fluid' style={{ paddingTop: "5rem" }}>
-                <Navbar viewer={viewer} setViewer={setViewer} />
-                {viewer === 0 && (
-                  <Landing viewer={viewer} setViewer={setViewer} />
-                )}
-                {viewer === 1 && (
-                  <TrainingPlans viewer={viewer} setViewer={setViewer} />
-                )}
-              </div>
-            }
-          /> */}
+          <Route path='/appointments' element={<ScheduleAppt />} />
+          <Route path='/feedback' element={<CustomerFeedback />} />
         </Routes>
       </Router>
     </div>

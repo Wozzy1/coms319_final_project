@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "image": "images/thr33.jpg",
+      "alt": "thr33",
+      "header": "About Thr33",
+      "content1": "Welcome to Thr33 Wellness! Where I believe in the power of achieving a harmonious spirit, cultivating a resilient mindset, and maintaining a grounded body. ",
+      "content2": "At thr33, my core values are not just words; they form the foundation of my training philosophy. I am dedicated to guiding you towards a balanced lifestyle, fostering positive relationships with your body, and instilling mindful determination in your fitness journey.",
+      "content3": "Together, let’s embark on a path of holistic well-being and achieve your health and fitness goals with purpose and joy. If your goal is to build a better relationship with your body and do not know where to start, please contact me!"
+    },
+    {
+      "image": "images/carly_4.jpg",
+      "alt": "Carly 4",
+      "header": "Meet Your Coach.",
+      "content1": "I'm Carly, your coach. With a B.A. degree in Exercise Science from the University of Iowa, equipped with credentials such as ACSM CPT, PN1 nutrition coach, specialization in Pre/Postnatal fitness, and 200 YT.",
+      "content2": "",
+      "content3": ""
+    },
+    {
+      "image": "images/map.png",
+      "alt": "map",
+      "header": "Location",
+      "content1": "Thr33 Wellness is a wellness center located on Beaver Avenue in Des Moines, Iowa, specializing in yoga and Pilates. It aims to provide a holistic approach to fitness and well-being, catering to both physical and mental health through its various programs and services.",
+      "content2": "The center is situated in the Beaverdale neighborhood, an area known for its charming community atmosphere and proximity to parks and local shops. Thr33 Wellness focuses on creating a supportive environment for individuals looking to enhance their overall wellness through mindful movement practices like yoga and Pilates.",
+      "content3": ""
+    },
+    {
+      "image": "images/notes.jpg",
+      "alt": "Contact",
+      "header": "Contact Us!",
+      "content1": "For a conversation with me. Call me at 515-333-9337. For less urgent matters. Email me at theceofitness@gmail.com.",
+      "content2": "Our Instagram is @theceofitness.",
+      "content3": "Our location for you to come right to us is: Wellness Fitness, Beaver Avenue, Des Moines, IA"
+    }
+  ]
+}
