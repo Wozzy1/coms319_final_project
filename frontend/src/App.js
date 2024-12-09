@@ -14,7 +14,7 @@ function App() {
   return (
     <div className='App'>
       <Router>
-        <div className='container-fluid' style={{ padding: "5rem" }}>
+        <div className='container-fluid' style={{ padding: "1.9rem" }}>
           <Navbar />
         </div>
         <Routes>
