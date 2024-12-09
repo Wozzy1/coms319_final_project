@@ -20,8 +20,8 @@ function App() {
         <Routes>
           <Route path='/' element={<Landing />} />
           <Route path='/training_plans' element={<TrainingPlans />} />
-          <Route path='/appointments' element={<CustomerFeedback />} />
-          <Route path='/feedback' element={<ScheduleAppt />} />
+          <Route path='/appointments' element={<ScheduleAppt />} />
+          <Route path='/feedback' element={<CustomerFeedback />} />
         </Routes>
       </Router>
     </div>
