@@ -193,6 +193,7 @@ app.post("/comments/post", async (req, res) => {
         // Query MySQL
         const query = "INSERT INTO thr33_user_comments (commentMessage, commentTimestamp, userId) VALUES (?, NOW(), ?)";
         db.query(query, [commentMessage, userId], (err, results) => {
+            console.log(commentMessage, userId);
             if (err) {
                 // Handle error
                 console.log("Error in /comments/post " + err);
