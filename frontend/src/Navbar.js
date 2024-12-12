@@ -17,10 +17,18 @@ function Navbar({ isAdmin, setIsAdmin }) {
 
     try {
       // Fetch users from the API
-      const response = await axios.get("http://localhost:8081/users/list");
+      const response = await fetch("http://localhost:8081/users/list");
+
+      // Check if the response is successful
+      if (!response.ok) {
+        throw new Error("Network response was not ok.");
+      }
+
+      // Parse the response data
+      const users = await response.json();
 
       // Check if the username and password are correct
-      const user = response.data.find(
+      const user = users.find(
         (u) => u.username === username && u.password === password
       );
 
