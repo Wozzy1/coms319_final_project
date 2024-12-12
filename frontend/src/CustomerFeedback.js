@@ -17,7 +17,7 @@ const fetchTestimonies = async () => {
   }
 };
 
-function CustomerFeedback() {
+function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
   const [testimonies, setTestimonies] = useState([]);
   const [loading, setLoading] = useState(true);
 
