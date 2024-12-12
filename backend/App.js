@@ -171,6 +171,7 @@ app.get("/comments/:commentId", async (req, res) => {
 app.delete("/comments/delete/:commentId", async (req, res) => {
     try {
         const commentId = req.params.commentId;
+        console.log("--> " + commentId);
         db.query("SELECT * FROM thr33_user_comments where commentId = ?;", [commentId], (err, result) => {
             if (err) {
                 console.error({ error: `Error retrieving comment ${commentId}:` + err });
