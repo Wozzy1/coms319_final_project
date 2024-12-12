@@ -17,53 +17,11 @@ const fetchTestimonies = async () => {
   }
 };
 
-const submitTestimony = async (data) => {
-  try {
-    const response = await fetch(`${BASE_URL}/comments/add`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to submit testimony");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error submitting testimony:", error);
-    return null;
-  }
-};
-
-const postTestimony = async (message, userId) => {
-  try {
-    const response = await fetch(`${BASE_URL}/comments/post`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message, userId }),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to post testimony");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error posting testimony:", error);
-    return null;
-  }
-};
-
-function CustomerFeedback() {
+function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
   const [testimonies, setTestimonies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    messageContent: "",
-  });
+  const [messageContent, setMessageContent] = useState("");
 
   useEffect(() => {
     const getTestimonies = async () => {
@@ -75,31 +33,38 @@ function CustomerFeedback() {
     getTestimonies();
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const postTestimony = async (userId, commentMessage) => {
+    try {
+      const response = await fetch(`${BASE_URL}/comments/post`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, commentMessage }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to post testimony");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error posting testimony:", error);
+      return null;
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Prepare the data to match the required structure
-    const testimonyData = {
-      userId: 2, // Replace with the actual user ID if dynamic
-      commentMessage: formData.messageContent,
-    };
-  
-    console.log("--> " + formData.messageContent);
 
-    const postedTestimony = await postTestimony(testimonyData.commentMessage, testimonyData.userId);
-  
+    const postedTestimony = await postTestimony(userID, messageContent);
+
     if (postedTestimony) {
       setTestimonies([...testimonies, postedTestimony]);
-      setFormData({ firstName: "", lastName: "", messageContent: "" });
+      setMessageContent("");
       setShowForm(false);
     }
   };
-  
+
   if (loading) {
     return (
       <div>
@@ -141,34 +106,12 @@ function CustomerFeedback() {
       {showForm && (
         <form onSubmit={handleSubmit} className="testimony-form">
           <div>
-            <label htmlFor="firstName">First Name:</label>
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="lastName">Last Name:</label>
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
             <label htmlFor="messageContent">Message:</label>
             <textarea
               id="messageContent"
               name="messageContent"
-              value={formData.messageContent}
-              onChange={handleInputChange}
+              value={messageContent}
+              onChange={(e) => setMessageContent(e.target.value)}
               required
             />
           </div>
