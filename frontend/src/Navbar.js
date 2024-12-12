@@ -3,7 +3,7 @@ import "./styles/styles.css";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-function Navbar({ isAdmin, setIsAdmin }) {
+function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -35,8 +35,10 @@ function Navbar({ isAdmin, setIsAdmin }) {
       if (user) {
         if (user.username === "Wilson") {
           setIsAdmin(true);
+          setUserID(1);
           alert("Login successful. Welcome Admin!");
         } else {
+          setUserID(2);
           alert("Login successful. Normal peasant user.");
         }
         setModalVisible(false);
