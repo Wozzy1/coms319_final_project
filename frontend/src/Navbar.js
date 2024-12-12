@@ -2,12 +2,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/styles.css";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
+
 
 function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   const handleShow = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
