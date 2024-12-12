@@ -9,12 +9,10 @@ import ScheduleAppt from "./ScheduleAppt";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
-  const [viewer, setViewer] = useState(0);
-
   return (
     <div className='App'>
       <Router>
-        <div className='container-fluid' style={{ padding: "1.9rem" }}>
+        <div className='container-fluid' style={{ padding: "1.7rem" }}>
           <Navbar />
         </div>
         <Routes>

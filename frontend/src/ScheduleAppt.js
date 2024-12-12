@@ -26,7 +26,7 @@ function ScheduleAppt() {
   return (
     <div className='week-grid container'>
       {/* Header Row */}
-      <div className='row'>
+      <div className='table-row'>
         <div className='cell time-header'></div>
         {weekdays.map((day) => (
           <div key={day} className='cell header'>
@@ -37,7 +37,7 @@ function ScheduleAppt() {
 
       {/* Time Slots */}
       {timeSlots.map((slot) => (
-        <div className='row' key={slot}>
+        <div className='table-row' key={slot}>
           <div className='cell time-header'>{slot}</div>
           {weekdays.map((day) => (
             <div key={`${day}-${slot}`} className='cell slot'>

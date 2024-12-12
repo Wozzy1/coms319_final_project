@@ -1,124 +1,121 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/Landing.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function Landing() {
-  // Function to fetch JSON data
-  async function fetchJsonData() {
-    try {
-      const response = await fetch("/data.json");
-      const data = await response.json();
-      processJsonData(data);
-    } catch (err) {
-      console.log("Error: " + err);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    async function fetchJsonData() {
+      try {
+        const response = await fetch("/data.json");
+        const jsonData = await response.json();
+        console.log("Fetched Data:", jsonData); // Debugging
+        setData(jsonData.data || []); // Default to empty array if "data" is undefined
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
     }
-  }
+    fetchJsonData();
+  }, []);
 
-  // Function to process and render the JSON data
-  function processJsonData(array) {
-    var div = document.getElementById("content-container");
-    console.log(array.data.length);
+  const renderRows = () => {
+    if (!data || data.length === 0) return <p>No content available.</p>;
 
-    for (let index = 0; index < array.data.length; index += 2) {
-      // console.log(array.data[index].image);
-      const thing = array.data[index];
-      const thing2 = array.data[index + 1];
+    return data.map((thing, index) => {
+      const thing2 = data[index + 1]; // Next item, if exists
+      if (index % 2 !== 0) return null; // Skip odd indices
 
-      // Create HTML elements for each part of the data
-
-      let container = document.createElement("div");
-      container.innerHTML = `<div class="row" style="padding: 25px">
-            <!-- auto div: put image inside and determine the size of it and the grid will snap to -->
-            <div class="col-md-auto" style="padding: 20px">
-              <img src="${thing.image}" alt="${thing.alt}"class="img" style="max-height: 50vw" />
+      return (
+        <React.Fragment key={thing.id || index}>
+          <div className='row' style={{ padding: "25px" }}>
+            <div className='col-md-auto' style={{ padding: "20px" }}>
+              <img
+                src={thing.image}
+                alt={thing.alt}
+                className='img'
+                style={{ maxHeight: "50vw" }}
+              />
             </div>
-            <div class="col">
-              <div class="row">
-                <p class="header-text">${thing.header}</p>
+            <div className='col'>
+              <div className='row'>
+                <p className='header-text'>{thing.header}</p>
               </div>
-  
-              <div class="row" style="padding-top: 2vh">
-                <div class="content-text">
+              <div className='row' style={{ paddingTop: "2vh" }}>
+                <div className='content-text'>
                   <p>
-                    ${thing.content1}
+                    {thing.content1}
                     <br />
                     <br />
-                    ${thing.content2}
+                    {thing.content2}
                     <br />
                     <br />
-                    ${thing.content3}
+                    {thing.content3}
                   </p>
                 </div>
               </div>
             </div>
           </div>
-  
           <hr />
-          
-          <div class="row" style="padding: 25px">
-          <!-- auto div: put image inside and determine the size of it and the grid will snap to -->
-          <div class="col">
-            <div class="row">
-              <p class="header-text">${thing2.header}</p>
-            </div>
-  
-            <div class="row" style="padding-top: 2vh">
-              <div class="content-text">
-                <p>
-                  ${thing2.content1}
-                    <br />
-                    <br />
-                    ${thing2.content2}
-                    <br />
-                    <br />
-                    ${thing2.content3}
-                </p>
+
+          {thing2 && (
+            <div className='row' style={{ padding: "25px" }}>
+              <div className='col'>
+                <div className='row'>
+                  <p className='header-text'>{thing2.header}</p>
+                </div>
+                <div className='row' style={{ paddingTop: "2vh" }}>
+                  <div className='content-text'>
+                    <p>
+                      {thing2.content1}
+                      <br />
+                      <br />
+                      {thing2.content2}
+                      <br />
+                      <br />
+                      {thing2.content3}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className='col-md-auto' style={{ padding: "20px" }}>
+                <img
+                  src={thing2.image}
+                  alt={thing2.alt}
+                  className='img'
+                  style={{ maxHeight: "50vw" }}
+                />
               </div>
             </div>
-          </div>
-          <div class="col-md-auto" style="padding: 20px">
-            <img src="${thing2.image}" alt = "${thing2.alt}"class="img" style="max-height: 50vw" />
-          </div>
-        </div>
-        <hr />
-          `;
-
-      // Append section to the container
-
-      div.appendChild(container);
-    }
-  }
-
-  // window on load react equivalent
-  useEffect(() => {
-    fetchJsonData();
-  }, []);
+          )}
+          <hr />
+        </React.Fragment>
+      );
+    });
+  };
 
   return (
     <div>
       <div
         style={{
-          width: "100vw",
-          height: "40vw",
+          width: "98.9vw",
+          height: "42vw",
           overflow: "hidden",
-          display: "flex", // Enable flexbox
-          justifyContent: "center", // Center horizontally
-          alignItems: "center", // Center vertically
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         <img
           id='home_page_image'
-          src='./images/thr33_green_logo.png'
+          src='/images/thr33_green_logo.png'
           alt='placeholder for now'
-          style={{ maxWidth: "100%", maxHeight: "auto", objectFit: "contain" }} // Prevent overflow
+          style={{ maxWidth: "100%", maxHeight: "auto", objectFit: "contain" }}
         />
       </div>
-      <div
-        id='content-container'
-        className='container-fluid'
-        style={{ backgroundColor: "light" }}
-      ></div>
+      <div id='content-container' className='container-fluid'>
+        {renderRows()}
+      </div>
     </div>
   );
 }

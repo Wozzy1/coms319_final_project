@@ -52,17 +52,11 @@
 
 /* Container for rows */
 .row {
-  display: flex; /* Enable flexbox */
-  flex-wrap: wrap; /* Allow wrapping to a new line */
-  margin-right: -15px; /* Offset for column padding */
-  margin-left: -15px; /* Offset for column padding */
-  justify-content: flex-start; /* Default alignment */
-  align-items: stretch; /* Align items by height */
+  margin: 0;
 }
 
 /* Columns within rows */
 .col {
-  flex: 1; /* Take up equal space as other columns */
   padding-right: 15px;
   padding-left: 15px;
 }
