@@ -26,16 +26,6 @@ function TrainingPlans() {
 
     return data.map((program, index) => (
       <div key={index} className='row' style={{ padding: "25px" }}>
-        <div className='col-md-auto' style={{ padding: "20px" }}>
-          <img
-            src={`/images/${program.program
-              .replace(/\s+/g, "_")
-              .toLowerCase()}.jpg`} // Example image mapping
-            alt={program.program}
-            className='img'
-            style={{ maxHeight: "50vw" }}
-          />
-        </div>
         <div className='col'>
           <div className='row'>
             <p className='header-text'>{program.program}</p>
@@ -56,23 +46,6 @@ function TrainingPlans() {
 
   return (
     <div>
-      <div
-        style={{
-          width: "98.9vw",
-          height: "42vw",
-          overflow: "hidden",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <img
-          id='home_page_image'
-          src='/images/thr33_green_logo.png'
-          alt='placeholder for now'
-          style={{ maxWidth: "100%", maxHeight: "auto", objectFit: "contain" }}
-        />
-      </div>
       <div id='content-container' className='container-fluid'>
         {renderRows()}
       </div>
