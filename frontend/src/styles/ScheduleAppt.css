@@ -25,6 +25,16 @@
   background-color: #c7f797;
 }
 
+.slot.booked {
+  background-color: red;
+  cursor: not-allowed; /* Optional: to indicate the slot is not clickable */
+}
+
+.slot.booked-by-user {
+  background-color: blue; /* Blue for slots booked by the current user */
+}
+
+
 .time-header {
   font-weight: bold;
   background-color: #f7f7f7;
@@ -36,4 +46,34 @@
 .header {
   background-color: #ececec;
   font-weight: bold;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.popup-content {
+  text-align: center;
+}
+
+.popup-content button {
+  margin: 0 10px 0 0; /* Adds space to the right of each button */
+  padding: 5px 10px;
+  border: none;
+  background: #54b3d6;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.popup-content button:last-child {
+  margin-right: 0; /* Ensures the last button doesn't have extra spacing */
 }

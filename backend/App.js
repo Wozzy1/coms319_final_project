@@ -60,6 +60,7 @@ app.get("/users/list", async (req, res) => {
                 console.error({ error: "Error retrieving all users:" + err });
                 return res.status(500).send({ error: "Error retrieving all users" + err });
             }
+            console.log(result);
             res.status(200).send(result);
         });
     } catch (err) {
@@ -229,6 +230,7 @@ app.put("/comments/update/:commentId", async (req, res) => {
                 res.status(404).send({ error: "Comment not found or unauthorized" });
             } else {
                 // Success
+                console.log(commentMessage, commentId, userId);
                 res.status(200).send("Comment updated successfully");
             }
         });
@@ -236,4 +238,72 @@ app.put("/comments/update/:commentId", async (req, res) => {
         console.error("Error in /comments/update " + err);
         res.status(500).send({ error: "Error updating comment " + err });
     }
+});
+
+app.post("/appointments/schedule", async (req, res) => {
+    try {
+        // Read data from Body
+        const { time_slot, day, user_id } = req.body;
+
+        // Query MySQL
+        const query = "INSERT INTO user_time_slots (time_slot, day, user_id) VALUES (?, ?, ?)";
+        db.query(query, [time_slot, day, user_id], (err, results) => {
+            console.log(time_slot, day, user_id);
+            if (err) {
+                // Handle error
+                console.log("Error in /appointments/schedule " + err);
+                res.status(409).send({ error: "Error scheduling time " + err });
+            } else {
+                // Success
+                res.status(201).send("Appointment added successfully");
+            }
+        });
+            } catch (err) {
+        console.err("Error in /appointments/schedule " + err);
+        res.status(500).send({ error: 'Error scheduling time' + err });
+    };
+
+});
+
+app.delete("/appointments/:id", (req, res) => {
+    const { id } = req.params;
+
+    const query = "DELETE FROM user_time_slots WHERE id = ?";
+    db.query(query, [id], (err, results) => {
+        if (err) {
+            console.log("Error in /appointments/:id (DELETE) " + err);
+            res.status(500).send({ error: "Error deleting appointment " + err });
+        } else if (results.affectedRows === 0) {
+            res.status(404).send({ error: "Appointment not found" });
+        } else {
+            res.status(200).send("Appointment deleted successfully");
+        }
+    });
+});
+
+app.get("/appointments", (req, res) => {
+    const query = "SELECT * FROM user_time_slots";
+    db.query(query, (err, results) => {
+        if (err) {
+            console.log("Error in /appointments (GET) " + err);
+            res.status(500).send({ error: "Error fetching appointments " + err });
+        } else {
+            console.log(results);
+            res.status(200).json(results);
+        }
+    });
+});
+
+app.get("/appointments/user/:user_id", (req, res) => {
+    const { user_id } = req.params;
+
+    const query = "SELECT * FROM user_time_slots WHERE user_id = ?";
+    db.query(query, [user_id], (err, results) => {
+        if (err) {
+            console.log("Error in /appointments/user/:user_id (GET) " + err);
+            res.status(500).send({ error: "Error fetching user appointments " + err });
+        } else {
+            res.status(200).json(results);
+        }
+    });
 });

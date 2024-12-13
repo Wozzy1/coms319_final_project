@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
+const BASE_URL = "http://localhost:8081";
+
 function Navbar({ user, setUser }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [error, setError] = useState("");
@@ -9,21 +11,29 @@ function Navbar({ user, setUser }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     try {
-      const response = await fetch("http://localhost:8081/users/list");
+      // Fetch users from the API
+      const response = await fetch(`${BASE_URL}/users/list`);
+  
+      // Check if the response is successful
       if (!response.ok) {
         throw new Error("Network response was not ok.");
       }
+  
+      // Parse the response data
       const users = await response.json();
-
-      // Check username and password
+  
+      // Check if the username and password match an existing user
       const authenticatedUser = users.find(
         (u) => u.username === username && u.password === password
       );
-
+  
       if (authenticatedUser) {
-        const isAdmin = authenticatedUser.isAdmin;
+        // Extract the user's role
+        const isAdmin = authenticatedUser.role === "admin";
+  
+        // Update the user JSON body
         setUser({
           userID: authenticatedUser.id,
           username: authenticatedUser.username,
@@ -41,7 +51,7 @@ function Navbar({ user, setUser }) {
       setError("An error occurred while trying to log in. Please try again.");
     }
   };
-
+  
   const handleLogout = () => {
     setUser({ userID: 0, username: "", password: "", isAdmin: false });
     localStorage.removeItem("user");
