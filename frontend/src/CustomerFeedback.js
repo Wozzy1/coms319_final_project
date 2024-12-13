@@ -36,11 +36,35 @@ const deleteTestimony = async (testimonyId) => {
   }
 };
 
+// Update testimony
+const updateTestimony = async (commentId, commentMessage, userId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/comments/update/${commentId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ commentMessage, userId }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Error updating testimony");
+    }
+
+    return await response.text(); // Success message
+  } catch (error) {
+    console.error("Error updating testimony:", error);
+    return null;
+  }
+};
+
 function CustomerFeedback({ user, setUser }) {
   const [testimonies, setTestimonies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [messageContent, setMessageContent] = useState("");
+  const [editingTestimony, setEditingTestimony] = useState(null); // Track which testimony is being edited
 
   // Fetch testimonies on component mount
   useEffect(() => {
@@ -74,7 +98,7 @@ function CustomerFeedback({ user, setUser }) {
     }
   };
 
-  // Handle form submission
+  // Handle form submission for new or edited testimony
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -83,12 +107,32 @@ function CustomerFeedback({ user, setUser }) {
       return;
     }
 
-    const postedTestimony = await postTestimony(user.userID, messageContent);
-
-    if (postedTestimony) {
-      setTestimonies([...testimonies, postedTestimony]);
-      setMessageContent("");
-      setShowForm(false);
+    if (editingTestimony) {
+      // Update testimony
+      const updatedTestimony = await updateTestimony(
+        editingTestimony.id,
+        messageContent,
+        user.userID
+      );
+      if (updatedTestimony) {
+        setTestimonies(
+          testimonies.map((testimony) =>
+            testimony.id === editingTestimony.id
+              ? { ...testimony, commentMessage: messageContent }
+              : testimony
+          )
+        );
+        setEditingTestimony(null);
+        setMessageContent("");
+      }
+    } else {
+      // Post new testimony
+      const postedTestimony = await postTestimony(user.userID, messageContent);
+      if (postedTestimony) {
+        setTestimonies([...testimonies, postedTestimony]);
+        setMessageContent("");
+        setShowForm(false);
+      }
     }
   };
 
@@ -105,6 +149,13 @@ function CustomerFeedback({ user, setUser }) {
         testimonies.filter((testimony) => testimony.id !== testimonyId)
       );
     }
+  };
+
+  // Handle edit button click
+  const handleEdit = (testimony) => {
+    setEditingTestimony(testimony);
+    setMessageContent(testimony.commentMessage);
+    setShowForm(true);
   };
 
   if (loading) {
@@ -130,15 +181,25 @@ function CustomerFeedback({ user, setUser }) {
                 <p>{testimony.commentMessage}</p>
                 <small>- {testimony.username || "Anonymous"}</small>
               </div>
-              {/* Delete button visible based on user permissions */}
+              {/* Edit and Delete buttons visible based on user permissions */}
               {(user.isAdmin || testimony.userID === user.userID) && (
-                <Button
-                  variant='danger'
-                  onClick={() => handleDelete(testimony.id)}
-                  size='sm'
-                >
-                  Delete
-                </Button>
+                <div>
+                  <Button
+                    variant='warning'
+                    size='sm'
+                    onClick={() => handleEdit(testimony)}
+                    className='mr-2'
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant='danger'
+                    onClick={() => handleDelete(testimony.id)}
+                    size='sm'
+                  >
+                    Delete
+                  </Button>
+                </div>
               )}
             </ListGroup.Item>
           ))}
@@ -176,7 +237,7 @@ function CustomerFeedback({ user, setUser }) {
             />
           </Form.Group>
           <Button type='submit' variant='primary' className='mt-3 w-100'>
-            Submit
+            {editingTestimony ? "Update Testimony" : "Submit"}
           </Button>
         </Form>
       )}
