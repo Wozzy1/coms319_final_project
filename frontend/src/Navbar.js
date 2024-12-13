@@ -1,14 +1,9 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./styles/styles.css";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
 
-
-function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
+function Navbar({ user, setUser }) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
 
@@ -31,20 +26,31 @@ function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
       const users = await response.json();
 
       // Check if the username and password are correct
-      const user = users.find(
+      const authenticatedUser = users.find(
         (u) => u.username === username && u.password === password
       );
 
-      if (user) {
-        if (user.username === "Wilson") {
-          setIsAdmin(true);
-          setUserID(1);
-          alert("Login successful. Welcome Admin!");
-        } else {
-          setUserID(2);
-          alert("Login successful. Normal peasant user.");
-        }
-        setModalVisible(false);
+      if (authenticatedUser) {
+        // Determine admin status based on username
+        const isAdmin = authenticatedUser.isAdmin;
+
+        // Update the user JSON body
+        setUser({
+          userID: authenticatedUser.id,
+          username: authenticatedUser.username,
+          password: authenticatedUser.password,
+          isAdmin: isAdmin,
+          isLoggedIn: true,
+        });
+
+        // Display appropriate message
+        alert(
+          `Login successful. Welcome ${
+            isAdmin ? "Admin!" : "Normal peasant user."
+          }`
+        );
+
+        setModalVisible(false); // Close modal
       } else {
         alert("Invalid username or password. Please try again.");
       }
@@ -57,8 +63,9 @@ function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
   };
 
   const handleLogout = () => {
-    setIsAdmin(false);
-    alert("You have been logged out.");
+    setUser({ userID: 0, username: "", password: "", isAdmin: false });
+    localStorage.removeItem("user"); // Clear user data from localStorage
+    alert("Logged out successfully.");
   };
 
   return (
@@ -109,7 +116,7 @@ function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
                   </Link>
                 </li>
               </ul>
-              {isAdmin ? (
+              {user.isLoggedIn ? (
                 <button
                   className='btn btn-outline-primary'
                   onClick={handleLogout}
@@ -127,7 +134,6 @@ function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
             </div>
           </div>
         </nav>
-
         {/* Modal */}
         {modalVisible && (
           <div
@@ -159,8 +165,13 @@ function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
                         type='text'
                         className='form-control'
                         id='username'
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        value={user.username}
+                        onChange={(e) =>
+                          setUser((prevUser) => ({
+                            ...prevUser,
+                            username: e.target.value,
+                          }))
+                        }
                         required
                       />
                     </div>
@@ -172,8 +183,13 @@ function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
                         type='password'
                         className='form-control'
                         id='password'
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={user.password}
+                        onChange={(e) =>
+                          setUser((prevUser) => ({
+                            ...prevUser,
+                            password: e.target.value,
+                          }))
+                        }
                         required
                       />
                     </div>
@@ -186,9 +202,9 @@ function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
             </div>
           </div>
         )}
+        ;
       </header>
     </div>
   );
 }
-
 export default Navbar;

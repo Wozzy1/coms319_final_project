@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Container, Form, Button, ListGroup, Card } from "react-bootstrap";
 import "./styles/CustomerFeedback.css";
 
 const BASE_URL = "http://localhost:8081";
@@ -35,7 +36,7 @@ const deleteTestimony = async (testimonyId) => {
   }
 };
 
-function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
+function CustomerFeedback({ user, setUser }) {
   const [testimonies, setTestimonies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -53,14 +54,14 @@ function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
   }, []);
 
   // Post testimony
-  const postTestimony = async (userId, commentMessage) => {
+  const postTestimony = async (userID, commentMessage) => {
     try {
       const response = await fetch(`${BASE_URL}/comments/post`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userId, commentMessage }),
+        body: JSON.stringify({ userID, commentMessage }),
       });
 
       if (!response.ok) {
@@ -77,7 +78,12 @@ function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const postedTestimony = await postTestimony(userID, messageContent);
+    if (!user.isLoggedIn) {
+      console.error("User is not logged in. Cannot post testimony.");
+      return;
+    }
+
+    const postedTestimony = await postTestimony(user.userID, messageContent);
 
     if (postedTestimony) {
       setTestimonies([...testimonies, postedTestimony]);
@@ -87,82 +93,94 @@ function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
   };
 
   const handleDelete = async (testimonyId) => {
-    console.log("Attempting to delete testimony with ID:", testimonyId); // Log to confirm the ID
     if (!testimonyId) {
       console.error("Invalid testimony ID");
       return;
     }
-  
+
     const success = await deleteTestimony(testimonyId);
-  
+
     if (success) {
-      setTestimonies(testimonies.filter(testimony => testimony.id !== testimonyId));
+      setTestimonies(
+        testimonies.filter((testimony) => testimony.id !== testimonyId)
+      );
     }
   };
-  
+
   if (loading) {
     return (
-      <div>
-        <div className="testimonies">
-          <h2>Customer Testimonies</h2>
-          <p>Loading testimonies...</p>
-        </div>
-      </div>
+      <Container>
+        <h2>Customer Testimonies</h2>
+        <p>Loading testimonies...</p>
+      </Container>
     );
   }
 
   return (
-    <div className="testimonies">
+    <Container className='my-5'>
       <h2>Customer Testimonies</h2>
       {testimonies.length > 0 ? (
-        <ul>
+        <ListGroup>
           {testimonies.map((testimony) => (
-            <li key={testimony.id} className="testimony">
-              <div className="testimony-content">
+            <ListGroup.Item
+              key={testimony.id}
+              className='d-flex justify-content-between'
+            >
+              <div>
                 <p>{testimony.commentMessage}</p>
-                <small>- {testimony.firstName} {testimony.lastName}</small>
+                <small>- {testimony.username || "Anonymous"}</small>
               </div>
               {/* Delete button visible based on user permissions */}
-              {(isAdmin || testimony.userId === userID) && (
-                <button
+              {(user.isAdmin || testimony.userID === user.userID) && (
+                <Button
+                  variant='danger'
                   onClick={() => handleDelete(testimony.id)}
-                  className="delete-btn"
+                  size='sm'
                 >
                   Delete
-                </button>
+                </Button>
               )}
-            </li>
+            </ListGroup.Item>
           ))}
-        </ul>
+        </ListGroup>
       ) : (
-        <div className="testimony">
-          <div className="testimony-content">
+        <Card>
+          <Card.Body>
             <p>No testimonies available yet.</p>
             <small>- Someone</small>
-          </div>
-        </div>
+          </Card.Body>
+        </Card>
       )}
 
-      <button onClick={() => setShowForm(!showForm)} className="toggle-form-btn">
-        {showForm ? "Close Form" : "Add Testimony"}
-      </button>
+      {user.isLoggedIn && (
+        <Button
+          variant='secondary'
+          onClick={() => setShowForm(!showForm)}
+          className='mt-3'
+        >
+          {showForm ? "Close Form" : "Add Testimony"}
+        </Button>
+      )}
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="testimony-form">
-          <div>
-            <label htmlFor="messageContent">Message:</label>
-            <textarea
-              id="messageContent"
-              name="messageContent"
+        <Form onSubmit={handleSubmit} className='mt-4 shadow p-3 rounded'>
+          <Form.Group controlId='messageContent'>
+            <Form.Label>Share Your Testimony:</Form.Label>
+            <Form.Control
+              as='textarea'
+              rows={5}
+              placeholder='Write your testimony here...'
               value={messageContent}
               onChange={(e) => setMessageContent(e.target.value)}
               required
             />
-          </div>
-          <button type="submit" className="submit-btn">Submit</button>
-        </form>
+          </Form.Group>
+          <Button type='submit' variant='primary' className='mt-3 w-100'>
+            Submit
+          </Button>
+        </Form>
       )}
-    </div>
+    </Container>
   );
 }
 
