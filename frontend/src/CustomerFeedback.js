@@ -179,7 +179,10 @@ function CustomerFeedback({ user }) {
               <div>
                 <p>{testimony.commentMessage}</p>
                 <small>
-                  - {testimony.userId === user.userId ? "You" : "Anonymous"}
+                  -{" "}
+                  {testimony.userId === user.userId
+                    ? user.username + "(You)"
+                    : user.username}
                 </small>
               </div>
               {/* Edit and Delete buttons visible based on user permissions */}
