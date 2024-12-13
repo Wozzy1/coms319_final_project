@@ -202,10 +202,10 @@ app.post("/comments/post", async (req, res) => {
                 res.status(409).send({ error: "Error adding comment " + err });
             } else {
                 // Success
-                res.status(201).send("Message added successfully");
+                res.status(201).send({ message: "Message added successfully" });
             }
         });
-            } catch (err) {
+    } catch (err) {
         console.err("Error in /comments/post " + err);
         res.status(500).send({ error: 'Error sending comment' + err });
     };
@@ -218,22 +218,58 @@ app.put("/comments/update/:commentId", async (req, res) => {
         const { commentMessage, userId } = req.body;
         const { commentId } = req.params; // Get the commentId from the URL parameter
 
-        // Query MySQL to update the comment
-        const query = "UPDATE thr33_user_comments SET commentMessage = ?, commentTimestamp = NOW() WHERE commentId = ? AND userId = ?";
-        db.query(query, [commentMessage, commentId, userId], (err, results) => {
+        console.log(commentMessage, userId, commentId);
+
+        // First, check if the user is an admin
+        const userQuery = "SELECT role FROM thr33_user WHERE id = ?";
+        db.query(userQuery, [userId], (err, results) => {
             if (err) {
-                // Handle error
-                console.log("Error in /comments/update " + err);
-                res.status(409).send({ error: "Error updating comment " + err });
-            } else if (results.affectedRows === 0) {
-                // If no rows were affected (comment not found or user doesn't match)
-                res.status(404).send({ error: "Comment not found or unauthorized" });
+                console.log("Error checking if user is admin " + err);
+                return res.status(500).send({ error: "Error checking user admin status" });
+            }
+
+            // If user is an admin, allow the update regardless
+            if (results.length > 0 && results[0].role) {
+                // User is admin, proceed with the update
+                updateComment();
             } else {
-                // Success
-                console.log(commentMessage, commentId, userId);
-                res.status(200).send("Comment updated successfully");
+                // If user is not admin, check if the comment belongs to them
+                const checkOwnershipQuery = "SELECT userId FROM thr33_user_comments WHERE commentId = ?";
+                db.query(checkOwnershipQuery, [commentId], (err, results) => {
+                    if (err) {
+                        console.log("Error checking comment ownership " + err);
+                        return res.status(500).send({ error: "Error checking comment ownership" });
+                    }
+
+                    if (results.length === 0) {
+                        return res.status(404).send({ error: "Comment not found" });
+                    }
+
+                    // If the user is the owner of the comment, proceed with update
+                    if (results[0].userId === userId) {
+                        updateComment();
+                    } else {
+                        return res.status(403).send({ error: "Unauthorized to update this comment" });
+                    }
+                });
             }
         });
+
+        // Function to update the comment
+        function updateComment() {
+            const query = "UPDATE thr33_user_comments SET commentMessage = ?, commentTimestamp = NOW() WHERE commentId = ?";
+            db.query(query, [commentMessage, commentId], (err, results) => {
+                if (err) {
+                    console.log("Error in /comments/update " + err);
+                    res.status(409).send({ error: "Error updating comment " + err });
+                } else if (results.affectedRows === 0) {
+                    res.status(404).send({ error: "Comment not found" });
+                } else {
+                    res.status(200).send("Comment updated successfully");
+                }
+            });
+        }
+
     } catch (err) {
         console.error("Error in /comments/update " + err);
         res.status(500).send({ error: "Error updating comment " + err });
@@ -258,7 +294,7 @@ app.post("/appointments/schedule", async (req, res) => {
                 res.status(201).send("Appointment added successfully");
             }
         });
-            } catch (err) {
+    } catch (err) {
         console.err("Error in /appointments/schedule " + err);
         res.status(500).send({ error: 'Error scheduling time' + err });
     };
