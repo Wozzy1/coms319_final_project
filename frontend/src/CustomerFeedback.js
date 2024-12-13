@@ -4,6 +4,43 @@ import "./styles/CustomerFeedback.css";
 
 const BASE_URL = "http://localhost:8081";
 
+// get username by id
+const getUserById = async (userId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/users/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      // Handle HTTP errors
+      const errorData = await response.json();
+      throw new Error(
+        errorData.error || `Error fetching user with ID ${userId}`
+      );
+    }
+
+    const userData = await response.json(); // Parse the JSON response
+    return userData; // User data retrieved successfully
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    return null; // Return null on error
+  }
+};
+
+// fetch user
+const fetchUser = async (userId) => {
+  const userData = await getUserById(userId);
+  if (userData) {
+    console.log("User Data:", userData);
+    return userData.username;
+  } else {
+    console.log("Failed to fetch user data.");
+  }
+};
+
 // Fetch testimonies
 const fetchTestimonies = async () => {
   try {
@@ -61,111 +98,94 @@ const updateTestimony = async (commentId, commentMessage, userId) => {
 
 function CustomerFeedback({ user }) {
   const [testimonies, setTestimonies] = useState([]);
+  const [users, setUsers] = useState({}); // Map to store user details by userId
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [messageContent, setMessageContent] = useState("");
   const [editingTestimony, setEditingTestimony] = useState(null); // Track which testimony is being edited
 
-  // Fetch testimonies on component mount
+  // Fetch testimonies and user details on component mount
   useEffect(() => {
     const getTestimonies = async () => {
       const data = await fetchTestimonies();
       setTestimonies(data);
+      await fetchUserDetails(data.map((t) => t.userId)); // Fetch user details for testimonies
       setLoading(false);
     };
 
     getTestimonies();
   }, []);
 
-  // Post testimony
-  const postTestimony = async (userId, commentMessage) => {
-    try {
-      console.log(commentMessage, userId);
-      const response = await fetch(`${BASE_URL}/comments/post`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId, commentMessage }),
-      });
+  // Fetch user details by user IDs
+  const fetchUserDetails = async (userIds) => {
+    const uniqueUserIds = [...new Set(userIds)]; // Avoid duplicate requests
+    const userDetails = {};
 
-      if (!response.ok) {
-        throw new Error("Failed to post testimony");
-      }
-      return await response.json();
-    } catch (error) {
-      console.error("Error posting testimony:", error);
-      return null;
-    }
-  };
+    await Promise.all(
+      uniqueUserIds.map(async (userId) => {
+        try {
+          const response = await fetch(`${BASE_URL}/users/${userId}`);
+          if (response.ok) {
+            const userData = await response.json();
+            userDetails[userId] = userData[0]; // Assuming the backend sends user data in an array
+          }
+        } catch (error) {
+          console.error(`Error fetching user with ID ${userId}:`, error);
+        }
+      })
+    );
 
-  // Handle form submission for new or edited testimony
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!user.isLoggedIn) {
-      console.error("User is not logged in. Cannot post testimony.");
-      return;
-    }
-
-    if (editingTestimony) {
-      // Update testimony
-      const updatedTestimony = await updateTestimony(
-        editingTestimony.commentId,
-        messageContent,
-        user.userID
-      );
-
-      if (updatedTestimony) {
-        setTestimonies(
-          testimonies.map((testimony) =>
-            testimony.commentId === editingTestimony.commentId
-              ? { ...testimony, commentMessage: messageContent }
-              : testimony
-          )
-        );
-        setEditingTestimony(null);
-        setMessageContent("");
-        setShowForm(false);
-        setTimeout(function() { alert('Testimony updated! Thanks!'); }, 1);
-      }
-    } else {
-      // Post new testimony
-      const postedTestimony = await postTestimony(user.userID, messageContent);
-      if (postedTestimony) {
-        setTestimonies([...testimonies, postedTestimony]);
-        setMessageContent("");
-        setShowForm(false);
-        setTimeout(function() { alert('Testimony posted! Thanks!'); }, 1);
-      }
-    }
+    setUsers((prev) => ({ ...prev, ...userDetails }));
   };
 
   const handleDelete = async (commentId) => {
-    if (!commentId) {
-      console.error("Invalid comment ID");
-      return;
-    }
-
     const success = await deleteTestimony(commentId);
-
     if (success) {
-      setTestimonies(
-        testimonies.filter((testimony) => testimony.commentId !== commentId)
-      );
+      setTestimonies(testimonies.filter((t) => t.commentId !== commentId));
     }
   };
 
-  // Handle edit button click
   const handleEdit = (testimony) => {
     setEditingTestimony(testimony);
     setMessageContent(testimony.commentMessage);
     setShowForm(true);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (editingTestimony) {
+      const updated = await updateTestimony(
+        editingTestimony.commentId,
+        messageContent,
+        user.userID
+      );
+      if (updated) {
+        setTestimonies(
+          testimonies.map((t) =>
+            t.commentId === editingTestimony.commentId
+              ? { ...t, commentMessage: messageContent }
+              : t
+          )
+        );
+        setEditingTestimony(null);
+        setMessageContent("");
+        setShowForm(false);
+        alert("Testimony updated! Thanks!");
+      }
+    } else {
+      const posted = await postTestimony(user.userID, messageContent);
+      if (posted) {
+        setTestimonies([...testimonies, posted]);
+        setMessageContent("");
+        setShowForm(false);
+        alert("Testimony posted! Thanks!");
+      }
+    }
+  };
+
   if (loading) {
     return (
-      <Container>
+      <Container style={{ paddingTop: "5rem" }}>
         <h2>Customer Testimonies</h2>
         <p>Loading testimonies...</p>
       </Container>
@@ -184,14 +204,8 @@ function CustomerFeedback({ user }) {
             >
               <div>
                 <p>{testimony.commentMessage}</p>
-                <small>
-                  -{" "}
-                  {testimony.userId === user.userId
-                    ? user.username + "(You)"
-                    : user.username}
-                </small>
+                <small>- {fetchUser(testimony.userId)}</small>
               </div>
-              {/* Edit and Delete buttons visible based on user permissions */}
               {(user.isAdmin || testimony.userId === user.userId) && (
                 <div>
                   <Button
@@ -204,8 +218,8 @@ function CustomerFeedback({ user }) {
                   </Button>
                   <Button
                     variant='danger'
-                    onClick={() => handleDelete(testimony.commentId)}
                     size='sm'
+                    onClick={() => handleDelete(testimony.commentId)}
                   >
                     Delete
                   </Button>
