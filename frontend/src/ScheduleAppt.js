@@ -1,7 +1,8 @@
+import { useState } from "react";
 import React from "react";
 import "./styles/ScheduleAppt.css";
 
-function ScheduleAppt() {
+function ScheduleAppt({ user, setUser }) {
   const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const timeSlots = [
     "10:00 AM",
@@ -23,6 +24,22 @@ function ScheduleAppt() {
     "6:00 PM",
   ];
 
+  const [selectedCell, setSelectedCell] = useState(null); // To track the clicked cell
+  const [isPopupVisible, setPopupVisible] = useState(false); // To toggle the popup visibility
+
+  const handleCellClick = (day, slot) => {
+    setSelectedCell({ day, slot });
+    setPopupVisible(true);
+  };
+
+  const closePopup = () => {
+    setPopupVisible(false);
+    setSelectedCell(null);
+  };
+
+  const signUp = (user) => {
+    // send request that current user 
+  };
   return (
     <div className='week-grid container'>
       {/* Header Row */}
@@ -40,12 +57,28 @@ function ScheduleAppt() {
         <div className='table-row' key={slot}>
           <div className='cell time-header'>{slot}</div>
           {weekdays.map((day) => (
-            <div key={`${day}-${slot}`} className='cell slot'>
+            <div key={`${day}-${slot}`}
+              className='cell slot'
+              onClick={() => { handleCellClick(day, slot) }}>
               {/* Content for each slot */}
+
             </div>
           ))}
         </div>
       ))}
+
+      {/* Popup */}
+      {isPopupVisible && (
+        <div className='popup'>
+          <div className='popup-content'>
+            <h3>Selected Slot</h3>
+            <p>Day: {selectedCell?.day}</p>
+            <p>Time: {selectedCell?.slot}</p>
+            <button onClick={signUp()}>Reserve</button>
+            <button onClick={closePopup}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

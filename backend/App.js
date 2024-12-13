@@ -60,6 +60,7 @@ app.get("/users/list", async (req, res) => {
                 console.error({ error: "Error retrieving all users:" + err });
                 return res.status(500).send({ error: "Error retrieving all users" + err });
             }
+            console.log(result);
             res.status(200).send(result);
         });
     } catch (err) {
