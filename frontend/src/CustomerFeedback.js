@@ -167,7 +167,7 @@ function CustomerFeedback({ user }) {
   }
 
   return (
-    <Container className='my-5'>
+    <Container className='my-5' style={{ paddingTop: "2rem" }}>
       <h2>Customer Testimonies</h2>
       {testimonies.length > 0 ? (
         <ListGroup>
