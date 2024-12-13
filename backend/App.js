@@ -230,6 +230,7 @@ app.put("/comments/update/:commentId", async (req, res) => {
                 res.status(404).send({ error: "Comment not found or unauthorized" });
             } else {
                 // Success
+                console.log(commentMessage, commentId, userId);
                 res.status(200).send("Comment updated successfully");
             }
         });
@@ -237,4 +238,29 @@ app.put("/comments/update/:commentId", async (req, res) => {
         console.error("Error in /comments/update " + err);
         res.status(500).send({ error: "Error updating comment " + err });
     }
+});
+
+app.post("/appointments/schedule", async (req, res) => {
+    try {
+        // Read data from Body
+        const { timeslot, day, userId } = req.body;
+
+        // Query MySQL
+        const query = "INSERT INTO user_time_slots (timeslot, day, userId) VALUES (?, ?, ?)";
+        db.query(query, [timeslot, day, userId], (err, results) => {
+            console.log(timeslot, day, userId);
+            if (err) {
+                // Handle error
+                console.log("Error in /appointments/schedule " + err);
+                res.status(409).send({ error: "Error scheduling time " + err });
+            } else {
+                // Success
+                res.status(201).send("Appointment added successfully");
+            }
+        });
+            } catch (err) {
+        console.err("Error in /appointments/schedule " + err);
+        res.status(500).send({ error: 'Error scheduling time' + err });
+    };
+
 });

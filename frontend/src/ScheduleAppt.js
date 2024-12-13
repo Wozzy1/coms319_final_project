@@ -37,7 +37,7 @@ function ScheduleAppt({ user, setUser }) {
     setSelectedCell(null);
   };
 
-  const signUp = (user) => {
+  const reserveTimeslot = (user) => {
     // send request that current user 
   };
   return (
@@ -74,7 +74,7 @@ function ScheduleAppt({ user, setUser }) {
             <h3>Selected Slot</h3>
             <p>Day: {selectedCell?.day}</p>
             <p>Time: {selectedCell?.slot}</p>
-            <button onClick={signUp()}>Reserve</button>
+            <button onClick={reserveTimeslot()}>Schedule</button>
             <button onClick={closePopup}>Close</button>
           </div>
         </div>
