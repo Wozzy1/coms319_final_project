@@ -1,70 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 
 function Navbar({ user, setUser }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [error, setError] = useState("");
-  const [showModal, setShowModal] = useState(false);
-
-  const handleShow = () => setShowModal(true);
-  const handleClose = () => setShowModal(false);
+  const [username, setUsername] = useState(""); // Track username input
+  const [password, setPassword] = useState(""); // Track password input
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      // Fetch users from the API
       const response = await fetch("http://localhost:8081/users/list");
-
-      // Check if the response is successful
       if (!response.ok) {
         throw new Error("Network response was not ok.");
       }
-
-      // Parse the response data
       const users = await response.json();
 
-      // Check if the username and password are correct
+      // Check username and password
       const authenticatedUser = users.find(
         (u) => u.username === username && u.password === password
       );
 
       if (authenticatedUser) {
-        // Determine admin status based on username
         const isAdmin = authenticatedUser.isAdmin;
-
-        // Update the user JSON body
         setUser({
           userID: authenticatedUser.id,
           username: authenticatedUser.username,
           password: authenticatedUser.password,
-          isAdmin: isAdmin,
+          isAdmin,
           isLoggedIn: true,
         });
-
-        // Display appropriate message
-        alert(
-          `Login successful. Welcome ${
-            isAdmin ? "Admin!" : "Normal peasant user."
-          }`
-        );
-
+        alert(`Login successful. Welcome ${isAdmin ? "Admin!" : "User!"}`);
         setModalVisible(false); // Close modal
       } else {
-        alert("Invalid username or password. Please try again.");
+        setError("Invalid username or password. Please try again.");
       }
     } catch (error) {
       console.error("Error logging in:", error);
-      alert(
-        "An error occurred while trying to log in. Please try again later."
-      );
+      setError("An error occurred while trying to log in. Please try again.");
     }
   };
 
   const handleLogout = () => {
     setUser({ userID: 0, username: "", password: "", isAdmin: false });
-    localStorage.removeItem("user"); // Clear user data from localStorage
+    localStorage.removeItem("user");
     alert("Logged out successfully.");
   };
 
@@ -72,7 +52,7 @@ function Navbar({ user, setUser }) {
     <div className='App'>
       <header className='App-header'>
         <nav className='navbar fixed-top navbar-expand-lg bg-dark-subtle'>
-          <div className='container-fluid '>
+          <div className='container-fluid'>
             <Link to='/' style={{ textDecoration: "none" }}>
               <a
                 className='navbar-brand'
@@ -134,7 +114,6 @@ function Navbar({ user, setUser }) {
             </div>
           </div>
         </nav>
-        {/* Modal */}
         {modalVisible && (
           <div
             className='modal show'
@@ -165,13 +144,8 @@ function Navbar({ user, setUser }) {
                         type='text'
                         className='form-control'
                         id='username'
-                        value={user.username}
-                        onChange={(e) =>
-                          setUser((prevUser) => ({
-                            ...prevUser,
-                            username: e.target.value,
-                          }))
-                        }
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         required
                       />
                     </div>
@@ -183,13 +157,8 @@ function Navbar({ user, setUser }) {
                         type='password'
                         className='form-control'
                         id='password'
-                        value={user.password}
-                        onChange={(e) =>
-                          setUser((prevUser) => ({
-                            ...prevUser,
-                            password: e.target.value,
-                          }))
-                        }
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                       />
                     </div>
@@ -202,7 +171,6 @@ function Navbar({ user, setUser }) {
             </div>
           </div>
         )}
-        ;
       </header>
     </div>
   );
