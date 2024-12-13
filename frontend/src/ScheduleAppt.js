@@ -68,8 +68,10 @@ function ScheduleAppt({ user, setUser }) {
     // Check if the slot is booked by the current user
     const slot24h = convertTo24HourFormat(slot);
     const bookedByUser = appointments.some(
-      (appt) => appt.day === day && appt.time_slot === slot24h
-        && appt.user_id === user.userID
+      (appt) =>
+        appt.day === day &&
+        appt.time_slot === slot24h &&
+        appt.user_id === user.userID
     );
     console.log(day, slot, bookedByUser);
     setSelectedCell({ day, slot, isBooked: bookedByUser });
@@ -99,12 +101,11 @@ function ScheduleAppt({ user, setUser }) {
       if (response.ok) {
         setAppointmentsUpdated((prev) => !prev);
       }
-
     } catch (error) {
       console.error("Error making appointment:", error);
       return null;
     }
-  }
+  };
 
   const reserveTimeslot = () => {
     // Send request to reserve the timeslot
@@ -122,7 +123,10 @@ function ScheduleAppt({ user, setUser }) {
     try {
       // First, find the appointment to get the id
       const appointment = appointments.find(
-        (appt) => appt.time_slot === time_slot && appt.day === day && appt.user_id === user_id
+        (appt) =>
+          appt.time_slot === time_slot &&
+          appt.day === day &&
+          appt.user_id === user_id
       );
 
       if (!appointment) {
@@ -147,7 +151,6 @@ function ScheduleAppt({ user, setUser }) {
 
       // If the appointment is successfully deleted, update the state
       setAppointmentsUpdated((prev) => !prev);
-
     } catch (error) {
       console.error("Error deleting appointment:", error);
     }
@@ -162,7 +165,6 @@ function ScheduleAppt({ user, setUser }) {
     console.log(slot24h, day, user.userID);
     deleteAppointment(slot24h, day, user.userID);
 
-
     setPopupVisible(false); // Close the popup after deletion
   };
 
@@ -176,7 +178,7 @@ function ScheduleAppt({ user, setUser }) {
   };
 
   return (
-    <div className='week-grid container'>
+    <div className='week-grid container' style={{ paddingTop: "5rem" }}>
       {/* Header Row */}
       <div className='table-row'>
         <div className='cell time-header'></div>
@@ -196,9 +198,16 @@ function ScheduleAppt({ user, setUser }) {
               key={`${day}-${slot}`}
               className={`cell slot 
                 ${isSlotBooked(day, slot) ? "booked" : ""}
-                ${appointments.some(
-                (appt) => appt.day === day && appt.time_slot === convertTo24HourFormat(slot) && appt.user_id === user.userID
-              ) ? "booked-by-user" : ""}`}
+                ${
+                  appointments.some(
+                    (appt) =>
+                      appt.day === day &&
+                      appt.time_slot === convertTo24HourFormat(slot) &&
+                      appt.user_id === user.userID
+                  )
+                    ? "booked-by-user"
+                    : ""
+                }`}
               onClick={() => handleCellClick(day, slot)}
             >
               {/* Content for each slot */}
@@ -214,7 +223,8 @@ function ScheduleAppt({ user, setUser }) {
             <h3>Selected Slot</h3>
             <p>Day: {selectedCell?.day}</p>
             <p>Time: {selectedCell?.slot}</p>
-            {selectedCell?.isBooked && (selectedCell?.user_id === user.userID || user.isAdmin) ? (
+            {selectedCell?.isBooked &&
+            (selectedCell?.user_id === user.userID || user.isAdmin) ? (
               <button onClick={deleteTimeslot}>Delete</button>
             ) : (
               <button onClick={reserveTimeslot}>Schedule</button>
@@ -223,7 +233,6 @@ function ScheduleAppt({ user, setUser }) {
           </div>
         </div>
       )}
-
     </div>
   );
 }
