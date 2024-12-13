@@ -68,8 +68,8 @@ function ScheduleAppt({ user, setUser }) {
     // Check if the slot is booked by the current user
     const slot24h = convertTo24HourFormat(slot);
     const bookedByUser = appointments.some(
-      (appt) => appt.day === day && appt.time_slot === slot24h 
-      && appt.user_id === user.userID
+      (appt) => appt.day === day && appt.time_slot === slot24h
+        && appt.user_id === user.userID
     );
     console.log(day, slot, bookedByUser);
     setSelectedCell({ day, slot, isBooked: bookedByUser });
@@ -124,14 +124,14 @@ function ScheduleAppt({ user, setUser }) {
       const appointment = appointments.find(
         (appt) => appt.time_slot === time_slot && appt.day === day && appt.user_id === user_id
       );
-  
+
       if (!appointment) {
         console.error("Appointment not found for this slot");
         return;
       }
-  
+
       const { id } = appointment;
-  
+
       // Now send the DELETE request with the appointment id
       const response = await fetch(`${BASE_URL}/appointments/${id}`, {
         method: "DELETE",
@@ -140,19 +140,19 @@ function ScheduleAppt({ user, setUser }) {
         },
         body: JSON.stringify({ time_slot, day, user_id }),
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to delete appointment");
       }
-  
+
       // If the appointment is successfully deleted, update the state
       setAppointmentsUpdated((prev) => !prev);
-  
+
     } catch (error) {
       console.error("Error deleting appointment:", error);
     }
   };
-  
+
   const deleteTimeslot = () => {
     const { day, slot, user_id } = selectedCell;
     let slot24h = convertTo24HourFormat(slot);
@@ -162,7 +162,7 @@ function ScheduleAppt({ user, setUser }) {
     console.log(slot24h, day, user.userID);
     deleteAppointment(slot24h, day, user.userID);
 
-    
+
     setPopupVisible(false); // Close the popup after deletion
   };
 
@@ -194,7 +194,11 @@ function ScheduleAppt({ user, setUser }) {
           {weekdays.map((day) => (
             <div
               key={`${day}-${slot}`}
-              className={`cell slot ${isSlotBooked(day, slot) ? "booked" : ""}`}
+              className={`cell slot 
+                ${isSlotBooked(day, slot) ? "booked" : ""}
+                ${appointments.some(
+                (appt) => appt.day === day && appt.time_slot === convertTo24HourFormat(slot) && appt.user_id === user.userID
+              ) ? "booked-by-user" : ""}`}
               onClick={() => handleCellClick(day, slot)}
             >
               {/* Content for each slot */}

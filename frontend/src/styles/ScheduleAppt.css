@@ -30,6 +30,11 @@
   cursor: not-allowed; /* Optional: to indicate the slot is not clickable */
 }
 
+.slot.booked-by-user {
+  background-color: blue; /* Blue for slots booked by the current user */
+}
+
+
 .time-header {
   font-weight: bold;
   background-color: #f7f7f7;
