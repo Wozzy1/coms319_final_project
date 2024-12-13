@@ -1,77 +1,191 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
-const NavigationBar = () => {
-    return (
-        // <nav className="navbar navbar-expand-lg fixed-top navbar-scroll">
-        //     <div className="container">
-        //         <img src="./logo192.png" height="70" alt="Logo" loading="lazy" />
-        //         <button
-        //             className="navbar-toggler ps-0"
-        //             type="button"
-        //             data-bs-toggle="collapse"
-        //             data-bs-target="#navbarExample01"
-        //             aria-controls="navbarExample01"
-        //             aria-expanded="false"
-        //             aria-label="Toggle navigation"
-        //         >
-        //             <span className="navbar-toggler-icon d-flex justify-content-start align-items-center">
-        //                 <i className="fas fa-bars"></i>
-        //             </span>
-        //         </button>
-        //         <div className="collapse navbar-collapse" id="navbarExample01">
-        //             <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-        //                 <li className="nav-item">
-        //                     <Link className="nav-link" to="/about">
-        //                         About us
-        //                     </Link>
-        //                 </li>
-        //                 <li className="nav-item">
-        //                     <Link className="nav-link" to="/contact">
-        //                         Contact
-        //                     </Link>
-        //                 </li>
-        //             </ul>
+function Navbar({ isAdmin, setIsAdmin, userID, setUserID }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
-        //             <ul className="navbar-nav flex-row">
-        //                 <li className="nav-item">
-        //                     <a
-        //                         className="nav-link px-2"
-        //                         href="https://facebook.com"
-        //                         target="_blank"
-        //                         rel="noopener noreferrer"
-        //                     >
-        //                         <i className="fab fa-facebook-square"></i>
-        //                     </a>
-        //                 </li>
-        //                 <li className="nav-item">
-        //                     <a
-        //                         className="nav-link px-2"
-        //                         href="https://instagram.com"
-        //                         target="_blank"
-        //                         rel="noopener noreferrer"
-        //                     >
-        //                         <i className="fab fa-instagram"></i>
-        //                     </a>
-        //                 </li>
-        //                 <li className="nav-item">
-        //                     <a
-        //                         className="nav-link ps-2"
-        //                         href="https://youtube.com"
-        //                         target="_blank"
-        //                         rel="noopener noreferrer"
-        //                     >
-        //                         <i className="fab fa-youtube"></i>
-        //                     </a>
-        //                 </li>
-        //             </ul>
-        //         </div>
-        //     </div>
-        // </nav>
-        <div>
-            dooooo
-        </div>
-    );
-};
+  const handleShow = () => setShowModal(true);
+  const handleClose = () => setShowModal(false);
 
-export default NavigationBar;
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Fetch users from the API
+      const response = await fetch("http://localhost:8081/users/list");
+
+      // Check if the response is successful
+      if (!response.ok) {
+        throw new Error("Network response was not ok.");
+      }
+
+      // Parse the response data
+      const users = await response.json();
+
+      // Check if the username and password are correct
+      const user = users.find(
+        (u) => u.username === username && u.password === password
+      );
+
+      if (user) {
+        if (user.username === "Wilson") {
+          setIsAdmin(true);
+          setUserID(1);
+          alert("Login successful. Welcome Admin!");
+        } else {
+          setUserID(2);
+          alert("Login successful. Normal peasant user.");
+        }
+        setModalVisible(false);
+      } else {
+        alert("Invalid username or password. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      alert(
+        "An error occurred while trying to log in. Please try again later."
+      );
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAdmin(false);
+    alert("You have been logged out.");
+  };
+
+  return (
+    <div className='App'>
+      <header className='App-header'>
+        <nav className='navbar fixed-top navbar-expand-lg bg-dark-subtle'>
+          <div className='container-fluid '>
+            <Link to='/' style={{ textDecoration: "none" }}>
+              <a
+                className='navbar-brand'
+                href='#'
+                style={{ paddingLeft: "20px" }}
+              >
+                Thr33
+              </a>
+            </Link>
+            <div
+              className='collapse navbar-collapse'
+              id='navbarSupportedContent'
+            >
+              <ul className='navbar-nav me-auto mb-2 mb-lg-0'>
+                <li className='nav-item'>
+                  <Link to='/' style={{ textDecoration: "none" }}>
+                    <a className='nav-link' aria-current='page' href='#'>
+                      Home
+                    </a>
+                  </Link>
+                </li>
+                <li className='nav-item'>
+                  <Link to='/training_plans' style={{ textDecoration: "none" }}>
+                    <a className='nav-link' href='#'>
+                      Training Plans
+                    </a>
+                  </Link>
+                </li>
+                <li className='nav-item'>
+                  <Link to='/appointments' style={{ textDecoration: "none" }}>
+                    <a className='nav-link' href='#'>
+                      Appointments
+                    </a>
+                  </Link>
+                </li>
+                <li className='nav-item'>
+                  <Link to='/feedback' style={{ textDecoration: "none" }}>
+                    <a className='nav-link' href='#'>
+                      Customer Feedback
+                    </a>
+                  </Link>
+                </li>
+              </ul>
+              {isAdmin ? (
+                <button
+                  className='btn btn-outline-primary'
+                  onClick={handleLogout}
+                >
+                  Log Out
+                </button>
+              ) : (
+                <button
+                  className='btn btn-outline-primary'
+                  onClick={() => setModalVisible(true)}
+                >
+                  Log In
+                </button>
+              )}
+            </div>
+          </div>
+        </nav>
+
+        {/* Modal */}
+        {modalVisible && (
+          <div
+            className='modal show'
+            tabIndex='-1'
+            style={{
+              display: "block",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            <div className='modal-dialog'>
+              <div className='modal-content'>
+                <div className='modal-header'>
+                  <h5 className='modal-title'>Log In</h5>
+                  <button
+                    type='button'
+                    className='btn-close'
+                    onClick={() => setModalVisible(false)}
+                  ></button>
+                </div>
+                <div className='modal-body'>
+                  <form onSubmit={handleLogin}>
+                    {error && <p className='text-danger'>{error}</p>}
+                    <div className='mb-3'>
+                      <label htmlFor='username' className='form-label'>
+                        Username
+                      </label>
+                      <input
+                        type='text'
+                        className='form-control'
+                        id='username'
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className='mb-3'>
+                      <label htmlFor='password' className='form-label'>
+                        Password
+                      </label>
+                      <input
+                        type='password'
+                        className='form-control'
+                        id='password'
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <button type='submit' className='btn btn-primary'>
+                      Log In
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </header>
+    </div>
+  );
+}
+
+export default Navbar;

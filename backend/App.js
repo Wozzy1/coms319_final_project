@@ -193,6 +193,7 @@ app.post("/comments/post", async (req, res) => {
         // Query MySQL
         const query = "INSERT INTO thr33_user_comments (commentMessage, commentTimestamp, userId) VALUES (?, NOW(), ?)";
         db.query(query, [commentMessage, userId], (err, results) => {
+            console.log(commentMessage, userId);
             if (err) {
                 // Handle error
                 console.log("Error in /comments/post " + err);
@@ -207,4 +208,31 @@ app.post("/comments/post", async (req, res) => {
         res.status(500).send({ error: 'Error sending comment' + err });
     };
 
+});
+
+app.put("/comments/update/:commentId", async (req, res) => {
+    try {
+        // Read data from Body
+        const { commentMessage, userId } = req.body;
+        const { commentId } = req.params; // Get the commentId from the URL parameter
+
+        // Query MySQL to update the comment
+        const query = "UPDATE thr33_user_comments SET commentMessage = ?, commentTimestamp = NOW() WHERE commentId = ? AND userId = ?";
+        db.query(query, [commentMessage, commentId, userId], (err, results) => {
+            if (err) {
+                // Handle error
+                console.log("Error in /comments/update " + err);
+                res.status(409).send({ error: "Error updating comment " + err });
+            } else if (results.affectedRows === 0) {
+                // If no rows were affected (comment not found or user doesn't match)
+                res.status(404).send({ error: "Comment not found or unauthorized" });
+            } else {
+                // Success
+                res.status(200).send("Comment updated successfully");
+            }
+        });
+    } catch (err) {
+        console.error("Error in /comments/update " + err);
+        res.status(500).send({ error: "Error updating comment " + err });
+    }
 });

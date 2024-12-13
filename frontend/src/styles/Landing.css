@@ -1,0 +1,137 @@
+.content-text {
+  font-size: 20px;
+  font-family: "Aileron", sans-serif;
+  letter-spacing: 2px;
+  line-height: 1.8;
+}
+
+.header-text {
+  font-size: 50px;
+  font-family: "EB Garamond", serif;
+  font-weight: bold;
+}
+
+.text-content {
+  padding: 20px 20px 20px 20px;
+}
+
+.img {
+  max-height: 40vw;
+  overflow-y: hidden;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.col-md-auto {
+  flex: 0 0 auto;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* .img {
+  max-width: 100%;
+  height: auto;
+  max-height: 50vw;
+} */
+
+.col-md-auto {
+  padding: 20px;
+}
+
+.hr {
+  border: none;
+  height: 10px; /* Adjust the thickness of the line */
+  background-color: black; /* Set the background color */
+  width: 100%; /* Set the width (optional, you can adjust it) */
+}
+
+/* Container for rows */
+.row {
+  margin: 0;
+}
+
+/* Columns within rows */
+.col {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* Auto-sized column (fits content) */
+.col-auto {
+  flex: 0 0 auto; /* Don't grow, and size to content */
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* Responsive column sizes */
+.col-1 {
+  flex: 0 0 8.33%;
+  max-width: 8.33%;
+}
+.col-2 {
+  flex: 0 0 16.66%;
+  max-width: 16.66%;
+}
+.col-3 {
+  flex: 0 0 25%;
+  max-width: 25%;
+}
+.col-4 {
+  flex: 0 0 33.33%;
+  max-width: 33.33%;
+}
+.col-5 {
+  flex: 0 0 41.66%;
+  max-width: 41.66%;
+}
+.col-6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+.col-7 {
+  flex: 0 0 58.33%;
+  max-width: 58.33%;
+}
+.col-8 {
+  flex: 0 0 66.66%;
+  max-width: 66.66%;
+}
+.col-9 {
+  flex: 0 0 75%;
+  max-width: 75%;
+}
+.col-10 {
+  flex: 0 0 83.33%;
+  max-width: 83.33%;
+}
+.col-11 {
+  flex: 0 0 91.66%;
+  max-width: 91.66%;
+}
+.col-12 {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+/* Center alignment for auto */
+.justify-content-center {
+  justify-content: center;
+}
+
+/* Spacing utilities */
+.row-gap {
+  gap: 15px; /* Add spacing between rows (optional) */
+}
+
+/* Add media queries for responsiveness */
+@media (max-width: 768px) {
+  .col {
+    flex: 1 0 100%; /* Default all columns to full width on small screens */
+    max-width: 100%;
+  }
+}

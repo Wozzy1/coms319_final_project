@@ -1,0 +1,41 @@
+[
+    {
+        "program": "1:1 Training",
+        "description": [
+            "Premium Individualized experience",
+            "Custom programming to fit individual needs",
+            "Nutrition Guidance",
+            "Can include pre/postnatal services",
+            "Can include private yoga services"
+        ]
+    },
+    {
+        "program": "Semi-Private Training",
+        "description": [
+            "6-week program meeting 2x/week",
+            "3-4:1 training experience",
+            "Guided meditations",
+            "Weekly journal prompts",
+            "Nutrition guidance"
+        ]
+    },
+    {
+        "program": "Online Coaching",
+        "description": [
+            "Fully remote training experience",
+            "Custom programming",
+            "Weekly accountability check-ins",
+            "Nutrition guidance"
+        ]
+    },
+    {
+        "program": "Nutrition Coaching",
+        "description": [
+            "Fully remote nutrition coaching experience",
+            "Custom meal plans",
+            "Weekly accountability check-ins",
+            "Cycle syncing food options available",
+            "Macro guidance available"
+        ]
+    }
+]
