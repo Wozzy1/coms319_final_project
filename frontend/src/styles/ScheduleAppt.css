@@ -25,6 +25,11 @@
   background-color: #c7f797;
 }
 
+.slot.booked {
+  background-color: red;
+  cursor: not-allowed; /* Optional: to indicate the slot is not clickable */
+}
+
 .time-header {
   font-weight: bold;
   background-color: #f7f7f7;
@@ -53,6 +58,7 @@
 .popup-content {
   text-align: center;
 }
+
 .popup-content button {
   margin: 0 10px 0 0; /* Adds space to the right of each button */
   padding: 5px 10px;
