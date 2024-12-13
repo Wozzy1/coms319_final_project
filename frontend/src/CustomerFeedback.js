@@ -38,6 +38,7 @@ const deleteTestimony = async (commentId) => {
 // Update testimony
 const updateTestimony = async (commentId, commentMessage, userId) => {
   try {
+    console.log("Inside update: " + commentId, commentMessage, userId);
     const response = await fetch(`${BASE_URL}/comments/update/${commentId}`, {
       method: "PUT",
       headers: {
@@ -79,6 +80,7 @@ function CustomerFeedback({ user }) {
   // Post testimony
   const postTestimony = async (userId, commentMessage) => {
     try {
+      console.log(commentMessage, userId);
       const response = await fetch(`${BASE_URL}/comments/post`, {
         method: "POST",
         headers: {
@@ -111,8 +113,9 @@ function CustomerFeedback({ user }) {
       const updatedTestimony = await updateTestimony(
         editingTestimony.commentId,
         messageContent,
-        user.userId
+        user.userID
       );
+
       if (updatedTestimony) {
         setTestimonies(
           testimonies.map((testimony) =>
@@ -123,14 +126,17 @@ function CustomerFeedback({ user }) {
         );
         setEditingTestimony(null);
         setMessageContent("");
+        setShowForm(false);
+        setTimeout(function() { alert('Testimony updated! Thanks!'); }, 1);
       }
     } else {
       // Post new testimony
-      const postedTestimony = await postTestimony(user.userId, messageContent);
+      const postedTestimony = await postTestimony(user.userID, messageContent);
       if (postedTestimony) {
         setTestimonies([...testimonies, postedTestimony]);
         setMessageContent("");
         setShowForm(false);
+        setTimeout(function() { alert('Testimony posted! Thanks!'); }, 1);
       }
     }
   };
