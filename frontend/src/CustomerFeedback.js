@@ -35,7 +35,7 @@ const deleteTestimony = async (testimonyId) => {
   }
 };
 
-function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
+function CustomerFeedback({ user, setUser }) {
   const [testimonies, setTestimonies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -53,14 +53,14 @@ function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
   }, []);
 
   // Post testimony
-  const postTestimony = async (userId, commentMessage) => {
+  const postTestimony = async (userID, commentMessage) => {
     try {
       const response = await fetch(`${BASE_URL}/comments/post`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userId, commentMessage }),
+        body: JSON.stringify({ userID, commentMessage }),
       });
 
       if (!response.ok) {
@@ -77,7 +77,12 @@ function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const postedTestimony = await postTestimony(userID, messageContent);
+    if (!user.isLoggedIn) {
+      console.error("User is not logged in. Cannot post testimony.");
+      return;
+    }
+
+    const postedTestimony = await postTestimony(user.userID, messageContent);
 
     if (postedTestimony) {
       setTestimonies([...testimonies, postedTestimony]);
@@ -92,14 +97,16 @@ function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
       console.error("Invalid testimony ID");
       return;
     }
-  
+
     const success = await deleteTestimony(testimonyId);
-  
+
     if (success) {
-      setTestimonies(testimonies.filter(testimony => testimony.id !== testimonyId));
+      setTestimonies(
+        testimonies.filter((testimony) => testimony.id !== testimonyId)
+      );
     }
   };
-  
+
   if (loading) {
     return (
       <div>
@@ -120,15 +127,13 @@ function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
             <li key={testimony.id} className='testimony'>
               <div className='testimony-content'>
                 <p>{testimony.commentMessage}</p>
-                <small>
-                  - {testimony.firstName} {testimony.lastName}
-                </small>
+                <small>- {testimony.username || "Anonymous"}</small>
               </div>
               {/* Delete button visible based on user permissions */}
-              {(isAdmin || testimony.userId === userID) && (
+              {(user.isAdmin || testimony.userID === user.userID) && (
                 <button
                   onClick={() => handleDelete(testimony.id)}
-                  className="delete-btn"
+                  className='delete-btn'
                 >
                   Delete
                 </button>
@@ -145,12 +150,14 @@ function CustomerFeedback({ isAdmin, setIsAdmin, userID, setUserID }) {
         </div>
       )}
 
-      <button
-        onClick={() => setShowForm(!showForm)}
-        className='toggle-form-btn'
-      >
-        {showForm ? "Close Form" : "Add Testimony"}
-      </button>
+      {user.isLoggedIn && (
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className='toggle-form-btn'
+        >
+          {showForm ? "Close Form" : "Add Testimony"}
+        </button>
+      )}
 
       {showForm && (
         <form onSubmit={handleSubmit} className='testimony-form'>
