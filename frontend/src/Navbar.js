@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import "./styles/styles.css";
 
 const BASE_URL = "http://localhost:8081";
 
@@ -11,28 +12,28 @@ function Navbar({ user, setUser }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+
     try {
       // Fetch users from the API
       const response = await fetch(`${BASE_URL}/users/list`);
-  
+
       // Check if the response is successful
       if (!response.ok) {
         throw new Error("Network response was not ok.");
       }
-  
+
       // Parse the response data
       const users = await response.json();
-  
+
       // Check if the username and password match an existing user
       const authenticatedUser = users.find(
         (u) => u.username === username && u.password === password
       );
-  
+
       if (authenticatedUser) {
         // Extract the user's role
         const isAdmin = authenticatedUser.role === "admin";
-  
+
         // Update the user JSON body
         setUser({
           userID: authenticatedUser.id,
@@ -51,7 +52,7 @@ function Navbar({ user, setUser }) {
       setError("An error occurred while trying to log in. Please try again.");
     }
   };
-  
+
   const handleLogout = () => {
     setUser({ userID: 0, username: "", password: "", isAdmin: false });
     localStorage.removeItem("user");
@@ -63,46 +64,53 @@ function Navbar({ user, setUser }) {
       <header className='App-header'>
         <nav className='navbar fixed-top navbar-expand-lg bg-dark-subtle'>
           <div className='container-fluid'>
-            <Link to='/' style={{ textDecoration: "none" }}>
-              <a
-                className='navbar-brand'
-                href='#'
-                style={{ paddingLeft: "20px" }}
-              >
-                Thr33
-              </a>
+            <Link
+              to='/'
+              className='mynavbar'
+              style={{ textDecoration: "none" }}
+            >
+              Thr33
             </Link>
             <div
               className='collapse navbar-collapse'
               id='navbarSupportedContent'
             >
               <ul className='navbar-nav me-auto mb-2 mb-lg-0'>
-                <li className='nav-item'>
-                  <Link to='/' style={{ textDecoration: "none" }}>
-                    <a className='nav-link' aria-current='page' href='#'>
-                      Home
-                    </a>
+                <li className='mynavbar-item'>
+                  <Link
+                    to='/'
+                    style={{ textDecoration: "none" }}
+                    className='mynav-item nav-link'
+                    href='#'
+                  >
+                    Home
                   </Link>
                 </li>
-                <li className='nav-item'>
-                  <Link to='/training_plans' style={{ textDecoration: "none" }}>
-                    <a className='nav-link' href='#'>
-                      Training Plans
-                    </a>
+                <li className='mynavbar-item'>
+                  <Link
+                    to='/training_plans'
+                    style={{ textDecoration: "none" }}
+                    className='mynav-item nav-link'
+                  >
+                    Training Plans
                   </Link>
                 </li>
-                <li className='nav-item'>
-                  <Link to='/appointments' style={{ textDecoration: "none" }}>
-                    <a className='nav-link' href='#'>
-                      Appointments
-                    </a>
+                <li className='mynavbar-item'>
+                  <Link
+                    to='/appointments'
+                    style={{ textDecoration: "none" }}
+                    className='mynav-item nav-link'
+                  >
+                    Appointments
                   </Link>
                 </li>
-                <li className='nav-item'>
-                  <Link to='/feedback' style={{ textDecoration: "none" }}>
-                    <a className='nav-link' href='#'>
-                      Customer Feedback
-                    </a>
+                <li className='mynavbar-item'>
+                  <Link
+                    to='/feedback'
+                    style={{ textDecoration: "none" }}
+                    className='mynav-item nav-link'
+                  >
+                    Customer Feedback
                   </Link>
                 </li>
               </ul>

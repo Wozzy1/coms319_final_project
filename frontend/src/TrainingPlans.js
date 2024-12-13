@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import "./styles/styles.css";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -25,7 +25,9 @@ function TrainingPlans() {
     if (!data || data.length === 0) return <p>No content available.</p>;
 
     return data.map((program, index) => (
-      <div key={index} className='row' style={{ padding: "25px" }}>
+      <div key={index} className='row'>
+        <div style={{ paddingTop: "3rem" }} />
+
         <div className='col'>
           <div className='row'>
             <p className='header-text'>{program.program}</p>
@@ -40,21 +42,20 @@ function TrainingPlans() {
             </div>
           </div>
         </div>
+        <div style={{ paddingTop: "3rem" }} />
+        <hr />
       </div>
     ));
   };
 
   return (
     <div>
+      <hr />
       <div id='content-container' className='container-fluid'>
         {renderRows()}
       </div>
     </div>
   );
-}
-
-function viewLanding() {
-  setViewer(0);
 }
 
 export default TrainingPlans;

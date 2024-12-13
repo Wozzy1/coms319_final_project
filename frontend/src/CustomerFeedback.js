@@ -207,6 +207,7 @@ function CustomerFeedback({ user }) {
   if (loading) {
     return (
       <Container>
+        <div style={{ paddingTop: "3rem" }} />
         <h2>Customer Testimonies</h2>
         <p>Loading testimonies...</p>
       </Container>
@@ -214,7 +215,7 @@ function CustomerFeedback({ user }) {
   }
 
   return (
-    <Container className='my-5' style={{ paddingTop: "30rem" }}>
+    <Container className='my-5'>
       <h2>Customer Testimonies</h2>
       {testimonies.length > 0 ? (
         <ListGroup>
@@ -286,6 +287,7 @@ function CustomerFeedback({ user }) {
           </Button>
         </Form>
       )}
+      <div style={{ paddingTop: "5rem" }} />
     </Container>
   );
 }

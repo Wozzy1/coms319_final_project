@@ -178,7 +178,8 @@ function ScheduleAppt({ user, setUser }) {
   };
 
   return (
-    <div className='week-grid container' style={{ paddingTop: "5rem" }}>
+    <div className='week-grid container'>
+      <div style={{ paddingTop: "5rem" }} />
       {/* Header Row */}
       <div className='table-row'>
         <div className='cell time-header'></div>
@@ -233,6 +234,7 @@ function ScheduleAppt({ user, setUser }) {
           </div>
         </div>
       )}
+      <div style={{ paddingTop: "5rem" }} />
     </div>
   );
 }
