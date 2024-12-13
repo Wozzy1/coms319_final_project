@@ -11,8 +11,7 @@ const fetchTestimonies = async () => {
     if (!response.ok) {
       throw new Error("Failed to fetch testimonies");
     }
-    const testimonies = await response.json();
-    return testimonies;
+    return await response.json();
   } catch (error) {
     console.error("Error fetching testimonies:", error);
     return [];
@@ -20,9 +19,9 @@ const fetchTestimonies = async () => {
 };
 
 // Delete testimony
-const deleteTestimony = async (testimonyId) => {
+const deleteTestimony = async (commentId) => {
   try {
-    const response = await fetch(`${BASE_URL}/comments/delete/${testimonyId}`, {
+    const response = await fetch(`${BASE_URL}/comments/delete/${commentId}`, {
       method: "DELETE",
     });
 
@@ -59,7 +58,7 @@ const updateTestimony = async (commentId, commentMessage, userId) => {
   }
 };
 
-function CustomerFeedback({ user, setUser }) {
+function CustomerFeedback({ user }) {
   const [testimonies, setTestimonies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -78,14 +77,14 @@ function CustomerFeedback({ user, setUser }) {
   }, []);
 
   // Post testimony
-  const postTestimony = async (userID, commentMessage) => {
+  const postTestimony = async (userId, commentMessage) => {
     try {
       const response = await fetch(`${BASE_URL}/comments/post`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userID, commentMessage }),
+        body: JSON.stringify({ userId, commentMessage }),
       });
 
       if (!response.ok) {
@@ -110,14 +109,14 @@ function CustomerFeedback({ user, setUser }) {
     if (editingTestimony) {
       // Update testimony
       const updatedTestimony = await updateTestimony(
-        editingTestimony.id,
+        editingTestimony.commentId,
         messageContent,
-        user.userID
+        user.userId
       );
       if (updatedTestimony) {
         setTestimonies(
           testimonies.map((testimony) =>
-            testimony.id === editingTestimony.id
+            testimony.commentId === editingTestimony.commentId
               ? { ...testimony, commentMessage: messageContent }
               : testimony
           )
@@ -127,7 +126,7 @@ function CustomerFeedback({ user, setUser }) {
       }
     } else {
       // Post new testimony
-      const postedTestimony = await postTestimony(user.userID, messageContent);
+      const postedTestimony = await postTestimony(user.userId, messageContent);
       if (postedTestimony) {
         setTestimonies([...testimonies, postedTestimony]);
         setMessageContent("");
@@ -136,17 +135,17 @@ function CustomerFeedback({ user, setUser }) {
     }
   };
 
-  const handleDelete = async (testimonyId) => {
-    if (!testimonyId) {
-      console.error("Invalid testimony ID");
+  const handleDelete = async (commentId) => {
+    if (!commentId) {
+      console.error("Invalid comment ID");
       return;
     }
 
-    const success = await deleteTestimony(testimonyId);
+    const success = await deleteTestimony(commentId);
 
     if (success) {
       setTestimonies(
-        testimonies.filter((testimony) => testimony.id !== testimonyId)
+        testimonies.filter((testimony) => testimony.commentId !== commentId)
       );
     }
   };
@@ -174,15 +173,17 @@ function CustomerFeedback({ user, setUser }) {
         <ListGroup>
           {testimonies.map((testimony) => (
             <ListGroup.Item
-              key={testimony.id}
+              key={testimony.commentId}
               className='d-flex justify-content-between'
             >
               <div>
                 <p>{testimony.commentMessage}</p>
-                <small>- {testimony.username || "Anonymous"}</small>
+                <small>
+                  - {testimony.userId === user.userId ? "You" : "Anonymous"}
+                </small>
               </div>
               {/* Edit and Delete buttons visible based on user permissions */}
-              {(user.isAdmin || testimony.userID === user.userID) && (
+              {(user.isAdmin || testimony.userId === user.userId) && (
                 <div>
                   <Button
                     variant='warning'
@@ -194,7 +195,7 @@ function CustomerFeedback({ user, setUser }) {
                   </Button>
                   <Button
                     variant='danger'
-                    onClick={() => handleDelete(testimony.id)}
+                    onClick={() => handleDelete(testimony.commentId)}
                     size='sm'
                   >
                     Delete
@@ -208,7 +209,6 @@ function CustomerFeedback({ user, setUser }) {
         <Card>
           <Card.Body>
             <p>No testimonies available yet.</p>
-            <small>- Someone</small>
           </Card.Body>
         </Card>
       )}
