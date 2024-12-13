@@ -4,6 +4,43 @@ import "./styles/CustomerFeedback.css";
 
 const BASE_URL = "http://localhost:8081";
 
+// get username by id
+const getUserById = async (userId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/users/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      // Handle HTTP errors
+      const errorData = await response.json();
+      throw new Error(
+        errorData.error || `Error fetching user with ID ${userId}`
+      );
+    }
+
+    const userData = await response.json(); // Parse the JSON response
+    return userData; // User data retrieved successfully
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    return null; // Return null on error
+  }
+};
+
+// fetch user
+const fetchUser = async (userId) => {
+  const userData = await getUserById(userId);
+  if (userData) {
+    console.log("User Data:", userData);
+    return userData.username;
+  } else {
+    console.log("Failed to fetch user data.");
+  }
+};
+
 // Fetch testimonies
 const fetchTestimonies = async () => {
   try {
@@ -127,7 +164,9 @@ function CustomerFeedback({ user }) {
         setEditingTestimony(null);
         setMessageContent("");
         setShowForm(false);
-        setTimeout(function() { alert('Testimony updated! Thanks!'); }, 1);
+        setTimeout(function () {
+          alert("Testimony updated! Thanks!");
+        }, 1);
       }
     } else {
       // Post new testimony
@@ -136,7 +175,9 @@ function CustomerFeedback({ user }) {
         setTestimonies([...testimonies, postedTestimony]);
         setMessageContent("");
         setShowForm(false);
-        setTimeout(function() { alert('Testimony posted! Thanks!'); }, 1);
+        setTimeout(function () {
+          alert("Testimony posted! Thanks!");
+        }, 1);
       }
     }
   };
@@ -166,6 +207,7 @@ function CustomerFeedback({ user }) {
   if (loading) {
     return (
       <Container>
+        <div style={{ paddingTop: "3rem" }} />
         <h2>Customer Testimonies</h2>
         <p>Loading testimonies...</p>
       </Container>
@@ -173,7 +215,7 @@ function CustomerFeedback({ user }) {
   }
 
   return (
-    <Container className='my-5' style={{ paddingTop: "2rem" }}>
+    <Container className='my-5'>
       <h2>Customer Testimonies</h2>
       {testimonies.length > 0 ? (
         <ListGroup>
@@ -184,12 +226,7 @@ function CustomerFeedback({ user }) {
             >
               <div>
                 <p>{testimony.commentMessage}</p>
-                <small>
-                  -{" "}
-                  {testimony.userId === user.userId
-                    ? user.username + "(You)"
-                    : user.username}
-                </small>
+                <small>- {fetchUser(testimony.userId)}</small>
               </div>
               {/* Edit and Delete buttons visible based on user permissions */}
               {(user.isAdmin || testimony.userId === user.userId) && (
@@ -250,6 +287,7 @@ function CustomerFeedback({ user }) {
           </Button>
         </Form>
       )}
+      <div style={{ paddingTop: "5rem" }} />
     </Container>
   );
 }
